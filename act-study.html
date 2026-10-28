@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ACT Study Desk</title>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f1e8;--card:#fffef9;--ink:#1d2a3a;--mute:#5b6675;--line:#cfcab8;--pencil:#f2b705;--ok:#1f7a4d;--bad:#b3362d;--fill:#1d2a3a;--okbg:#e2f1e8;--badbg:#f6e1de;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141b24;--card:#1c2632;--ink:#eef0f3;--mute:#9aa6b5;--line:#33414f;--pencil:#f2b705;--ok:#59c48a;--bad:#ef8a80;--fill:#f2b705;--okbg:#1b3a2b;--badbg:#44211e}}
+:root[data-theme="dark"]{--bg:#141b24;--card:#1c2632;--ink:#eef0f3;--mute:#9aa6b5;--line:#33414f;--pencil:#f2b705;--ok:#59c48a;--bad:#ef8a80;--fill:#f2b705;--okbg:#1b3a2b;--badbg:#44211e}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 "Nunito Sans",system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+h1{font:700 30px/1.15 Bitter,Georgia,serif;margin:8px 0 4px}
+p.sub{color:var(--mute);margin:0 0 18px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+nav button,.btn{font:600 15px "Nunito Sans",sans-serif;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:999px;cursor:pointer}
+nav button[aria-pressed="true"],.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible{outline:3px solid var(--pencil);outline-offset:2px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--mute);font-size:15px;margin-bottom:10px;flex-wrap:wrap}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:20px}
+.passage{border-left:4px solid var(--pencil);padding:2px 0 2px 14px;margin:0 0 16px;color:var(--mute);font-size:16px}
+.q{font:500 20px/1.4 Bitter,Georgia,serif;margin:0 0 16px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;font:inherit;color:var(--ink);background:none;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:9px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.bub{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font:700 14px "Nunito Sans";transition:background .15s,color .15s}
+.opt.sel .bub{background:var(--fill);color:var(--bg)}
+.opt.right{background:var(--okbg);border-color:var(--ok)}
+.opt.wrong{background:var(--badbg);border-color:var(--bad)}
+.why{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--bg);border:1.5px dashed var(--line)}
+.row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.flash{min-height:150px;display:grid;place-items:center;text-align:center;cursor:pointer;font:500 21px/1.4 Bitter,Georgia,serif}
+.flash small{display:block;font:600 14px "Nunito Sans";color:var(--mute);margin-top:10px}
+.score{font:700 44px Bitter,serif;margin:6px 0}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink)}
+.plan li{margin-bottom:6px}
+a.btn{text-decoration:none;display:inline-block}
+</style>
+</head>
+<body>
+<main>
+<h1>ACT Study Desk</h1>
+<p class="sub">Pick a section, answer questions, and read why each answer works. Every round gives you a fresh random set. Questions alternate A–D and F–J like the real test.</p>
+<nav id="tabs" aria-label="Sections"></nav>
+<div id="view"></div>
+</main>
+<script>
+const DATA={
+English:[
+{q:"Choose the best version:\n\"The team practiced all week, and ______ the game on Friday.\"",o:["they won","won it","they had won it","it won"],a:0,w:"A compound sentence needs a subject for the second clause. 'they won' keeps the tense and pronoun consistent."},
+{q:"Which sentence is punctuated correctly?",o:["My sister, who lives in Ohio visits often.","My sister who lives in Ohio, visits often.","My sister, who lives in Ohio, visits often.","My sister who lives, in Ohio visits often."],a:2,w:"Non-essential clauses get a comma before and after. The commas work like parentheses."},
+{q:"Choose the correct word: \"The committee made ______ decision yesterday.\"",o:["it's","its","its'","their's"],a:1,w:"'Its' is possessive. 'It's' always means 'it is' or 'it has'."},
+{q:"Which choice is the most concise?",o:["due to the fact that","because","for the reason that","on account of the fact that"],a:1,w:"ACT rewards concise wording when all choices mean the same thing."}],
+Math:[
+{q:"If 3x − 7 = 11, what is x?",o:["4","6","8","18"],a:1,w:"Add 7: 3x = 18. Divide by 3: x = 6."},
+{q:"What is the slope of the line through (2, 3) and (6, 11)?",o:["1","2","4","8"],a:1,w:"Slope = (11 − 3)/(6 − 2) = 8/4 = 2."},
+{q:"A right triangle has legs 6 and 8. What is its hypotenuse?",o:["10","12","14","100"],a:0,w:"6² + 8² = 36 + 64 = 100, so the hypotenuse is √100 = 10."},
+{q:"What is 20% of 150?",o:["15","20","30","45"],a:2,w:"0.20 × 150 = 30."},
+{q:"Which is the solution to x² − 5x + 6 = 0?",o:["x = 1 or 6","x = 2 or 3","x = −2 or −3","x = 5 or 6"],a:1,w:"Factor: (x − 2)(x − 3) = 0, so x = 2 or 3."}],
+Reading:[
+{p:"Maya had rehearsed the speech for weeks, but at the podium her notes seemed to blur. She breathed in, looked at her grandmother in the third row, and began. By the second paragraph, her voice no longer shook.",q:"What best describes how Maya changes in the passage?",o:["From confused to angry","From nervous to steady","From bored to excited","From proud to ashamed"],a:1,w:"Her notes blur and her voice shakes at first, then it stops shaking. That is nervous to steady."},
+{p:"City planners argue that adding bike lanes reduces traffic injuries. Critics reply that the lanes remove parking, hurting small shops. Both sides agree safety matters, but disagree on the cost.",q:"The main disagreement is about...",o:["whether safety matters","how much bike lanes cost shops","who built the lanes","whether people bike"],a:1,w:"The passage says both sides agree on safety; the dispute is over the cost to businesses."},
+{p:"The old lighthouse had stood empty for decades. Still, every autumn the townspeople repainted it, as though someone might yet return.",q:"The word 'yet' suggests the townspeople...",o:["have given up","feel hopeful","are angry","feel confused"],a:1,w:"'Yet' signals a lingering possibility, so the people are still hopeful."}],
+Science:[
+{p:"A student heats water and records its temperature every minute: 20°C at 0 min, 40°C at 2 min, 60°C at 4 min, 80°C at 6 min.",q:"What is the rate of temperature change?",o:["5°C per minute","10°C per minute","20°C per minute","40°C per minute"],a:1,w:"The temperature rises 20°C every 2 minutes, which is 10°C per minute."},
+{p:"Experiment 1 grows bean plants in sunlight; Experiment 2 grows them in shade. Both use the same soil and the same amount of water.",q:"What is the independent variable?",o:["Soil type","Water amount","Amount of light","Plant height"],a:2,w:"The independent variable is what the experimenter changes on purpose: sunlight vs shade."},
+{p:"Table: Pressure 1 atm gives volume 4 L, 2 atm gives 2 L, 4 atm gives 1 L (temperature constant).",q:"As pressure increases, volume...",o:["increases","decreases","stays the same","becomes zero"],a:1,w:"Volume falls as pressure rises. This inverse trend is Boyle's law."}]
+};
+const MORE={
+English:[
+{q:"Choose the correct verb: 'Neither the coach nor the players ______ ready.'",o:["is","are","was","be"],a:1,w:"With neither/nor, the verb agrees with the closer subject. 'Players' is plural, so use 'are'."},
+{q:"Choose the correct verb: 'She ______ the book to her brother yesterday.'",o:["gave","given","give","gives"],a:0,w:"Yesterday signals past tense. 'Gave' is the simple past of 'give'."},
+{q:"Which sentence is a run-on?",o:["I like pizza, and my sister likes pasta.","I like pizza my sister likes pasta.","I like pizza; my sister likes pasta.","I like pizza, but my sister likes pasta."],a:1,w:"Two complete sentences are jammed together with no punctuation or joining word."},
+{q:"Choose the correct pronoun: 'The prize was given to Sam and ______.'",o:["I","me","myself","mine"],a:1,w:"After a preposition ('to'), use the object form. Test it: 'given to me' sounds right."},
+{q:"Choose the best transition: 'It rained all day. ______, the game went on.'",o:["Therefore","However","For example","Similarly"],a:1,w:"The game continuing is a contrast to the rain, so 'However' fits."},
+{q:"Which is punctuated correctly?",o:["The childrens' toys","The children's toys","The childrens toys","The childrens's toys"],a:1,w:"'Children' is already plural, so add 's to show possession."},
+{q:"Choose the parallel option: 'She likes hiking, swimming, and ______.'",o:["to bike","biking","bikes","to biking"],a:1,w:"Items in a list should share the same form. Hiking, swimming, biking."},
+{q:"Choose the correct verb: 'If I ______ you, I would study.'",o:["was","were","am","be"],a:1,w:"Wishes and hypotheticals use the subjunctive 'were', even with 'I'."}],
+Reading:[
+{p:"Though the experiment failed, Dr. Lee wrote in her journal that every failure narrows the search.",q:"Dr. Lee's attitude toward failure is best described as...",o:["discouraged","constructive","indifferent","bitter"],a:1,w:"She sees failure as useful because it narrows the search. That is a constructive view."},
+{p:"The town's only bakery opened at 4 a.m. By 6, the line stretched past the bank, and the smell of warm bread drifted down Main Street.",q:"The details mainly show that the bakery is...",o:["struggling","popular","new","noisy"],a:1,w:"A long line before sunrise means many people want what it sells."},
+{p:"Unlike the cautious sparrows, the crows boldly approached the picnic tables, snatching crumbs before anyone could react.",q:"The word 'boldly' most nearly means...",o:["fearfully","bravely","slowly","quietly"],a:1,w:"It is contrasted with 'cautious', and the crows act without fear."},
+{p:"Studies show that students who sleep eight hours score higher on tests than those who stay up late studying.",q:"The author's main point is that...",o:["studying is useless","sleep helps test performance","tests are unfair","students sleep too much"],a:1,w:"The evidence links enough sleep to higher scores."},
+{p:"When the power went out, Ben lit candles and told stories until the lights returned. His little sister, who had been scared, was laughing by the end.",q:"Ben's actions most likely show that he is...",o:["selfish","comforting","careless","impatient"],a:1,w:"He calmed his scared sister, and she ended up laughing."}],
+Science:[
+{p:"A graph shows a plant's height rising steadily from 2 cm in week 1 to 10 cm in week 5.",q:"About how much did it grow per week?",o:["1 cm","2 cm","4 cm","8 cm"],a:1,w:"It grew 8 cm over 4 weeks (week 1 to week 5), which is 2 cm per week."},
+{p:"Two beakers hold equal water. Beaker A has salt added; Beaker B does not. Both are frozen, and B freezes first.",q:"Which beaker is the control?",o:["Beaker A","Beaker B","The salt","The freezer"],a:1,w:"The control is the setup without the change being tested. Here the change is the salt."},
+{p:"Ice, liquid water, and steam are all forms of H₂O.",q:"Changing from ice to liquid water is called...",o:["condensation","melting","evaporation","freezing"],a:1,w:"Solid to liquid is melting. Liquid to solid is freezing."},
+{p:"Data: a ball dropped from 1 m bounces 0.6 m; from 2 m it bounces 1.2 m; from 3 m it bounces 1.8 m.",q:"Predict the bounce height from 4 m.",o:["1.8 m","2.0 m","2.4 m","3.0 m"],a:2,w:"The bounce is always 0.6 times the drop height. 4 × 0.6 = 2.4 m."},
+{p:"Sample X has a pH of 3. Sample Y has a pH of 9.",q:"Which statement is correct?",o:["Both are acidic","X is acidic and Y is basic","X is basic and Y is acidic","Both are neutral"],a:1,w:"Below 7 is acidic, above 7 is basic."}]};
+Object.keys(MORE).forEach(k=>DATA[k].push(...MORE[k]));
+const CARDS=[
+["Slope formula","m = (y₂ − y₁) / (x₂ − x₁)"],
+["Quadratic formula","x = (−b ± √(b² − 4ac)) / 2a"],
+["Pythagorean theorem","a² + b² = c²"],
+["Circle area and circumference","A = πr²,  C = 2πr"],
+["its vs it's","its = belongs to it. it's = it is."],
+["Semicolon rule","A semicolon joins two complete sentences."],
+["Comma + FANBOYS","Use a comma before for, and, nor, but, or, yet, so when joining two sentences."],
+["Reading: main idea","Skim the first and last sentences of each paragraph first."],
+["Science: variables","Independent = what you change. Dependent = what you measure."],
+["Guessing","There is no penalty for wrong answers. Never leave a blank."]];
+const TABS=[...Object.keys(DATA),"Flashcards","Study plan"];
+let tab=TABS[0],st={};
+const $=s=>document.querySelector(s),view=$("#view");
+const safe=(fn,d)=>{try{return fn()}catch(e){return d}};
+function drawTabs(){const n=$("#tabs");n.innerHTML="";TABS.forEach(t=>{const b=document.createElement("button");b.textContent=t;b.setAttribute("aria-pressed",t===tab);b.onclick=()=>{tab=t;drawTabs();render()};n.appendChild(b)})}
+function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const VID={"ACT English grammar its vs it's":"https://www.shmoop.com/video/its-vs-its"};
+const CATS=[
+[`its,it's,its',their`,`'Its' shows ownership. 'It's' means 'it is' or 'it has'.`,[`The cat licked ___ paw.|its`,`The company raised ___ prices.|its`,`___ going to rain today.|it's`,`I think ___ time to leave.|it's`,`The tree lost ___ leaves in fall.|its`,`___ been a long week.|it's`,`Every school has ___ own rules.|its`]],
+[`their,there,they're,theirs`,`'Their' = belongs to them. 'There' = place. 'They're' = they are.`,[`The students left ___ backpacks in the hall.|their`,`Put the box over ___.|there`,`___ waiting for the bus.|they're`,`___ are six chairs in the room.|there`,`The twins finished ___ homework early.|their`,`I think ___ going to win.|they're`,`The neighbors painted ___ fence.|their`]],
+[`to,too,two,tow`,`'To' shows direction, 'too' means also or excessively, 'two' is the number.`,[`I bought ___ tickets for the show.|two`,`She wants to come ___.|too`,`We walked ___ the park.|to`,`It was ___ cold to swim.|too`,`He has ___ brothers.|two`,`Please give the note ___ Maria.|to`,`They drove ___ the lake.|to`]],
+[`than,then,that,them`,`'Than' compares. 'Then' shows time or sequence.`,[`She is taller ___ her sister.|than`,`First we ate, and ___ we left.|then`,`I would rather read ___ watch TV.|than`,`If you study, ___ you will pass.|then`,`This test is harder ___ the last one.|than`,`Mix the flour, ___ add the eggs.|then`,`He ran faster ___ anyone else.|than`]],
+[`affect,effect,affected,effects`,`'Affect' is usually a verb (to influence). 'Effect' is usually a noun (a result).`,[`The weather can ___ your mood.|affect`,`The medicine had a strong ___.|effect`,`Lack of sleep will ___ your grades.|affect`,`The special ___ in the movie were amazing.|effects`,`Cold weather ___ the crops last year.|affected`,`Reading daily has a positive ___ on vocabulary.|effect`,`What ___ did the storm have on the town?|effect`]],
+[`who,whom,whose,who's`,`'Who' is a subject, 'whom' is an object, 'whose' shows ownership, 'who's' = who is.`,[`___ is knocking at the door?|who`,`To ___ did you give the book?|whom`,`The girl ___ won the race is my cousin.|who`,`___ bike is this?|whose`,`With ___ are you going to the dance?|whom`,`___ going to the party tonight?|who's`,`The coach ___ we admire retired.|whom`]],
+[`is,are,be,been`,`The verb must match the real subject, not the words that come between.`,[`The books on the table ___ mine.|are`,`Each of the players ___ ready.|is`,`Either the cat or the dogs ___ outside.|are`,`The team ___ practicing on Saturday.|is`,`A box of pencils ___ on the desk.|is`,`Neither of the answers ___ correct.|is`,`There ___ many reasons to study.|are`]],
+[`has,have,haves,having`,`Use 'has' with singular subjects (he, she, each, everyone) and 'have' with plural ones.`,[`My brother ___ a new bike.|has`,`The girls ___ finished their projects.|have`,`Everyone in the class ___ a pencil.|has`,`The dogs ___ been barking all night.|have`,`She ___ already eaten lunch.|has`,`The cars in the lot ___ been washed.|have`,`Both of the winners ___ medals.|have`]],
+[`your,you're,yours,you`,`'Your' shows ownership. 'You're' means 'you are'.`,[`___ going to love this movie.|you're`,`Is this ___ jacket?|your`,`I think ___ right about the answer.|you're`,`Please bring ___ ID.|your`,`What is ___ favorite subject?|your`,`___ welcome to join us.|you're`,`Don't forget ___ lunch.|your`]],
+[`fewer,less,least,fewest`,`Use 'fewer' for things you can count and 'less' for amounts you cannot.`,[`There are ___ students today than yesterday.|fewer`,`I drank ___ water than usual.|less`,`She has ___ friends than her brother.|fewer`,`We had ___ rain this year.|less`,`The store sold ___ shirts this week.|fewer`,`Use ___ sugar in the recipe.|less`,`___ cars were on the road.|fewer`]],
+[`good,well,gooder,most well`,`'Good' describes a noun. 'Well' describes a verb (how something is done).`,[`She sings very ___.|well`,`That was a ___ idea.|good`,`He did ___ on the exam.|well`,`The soup tastes ___.|good`,`They play ___ together.|well`,`You did a ___ job.|good`,`I don't feel ___ today.|well`]],
+[`I,me,myself,mine`,`Drop the other person: if 'I' sounds right alone, use 'I'. If 'me' does, use 'me'.`,[`Maya and ___ went to the store.|I`,`The teacher gave Sam and ___ extra time.|me`,`Between you and ___, I'm nervous.|me`,`My brother and ___ built the model.|I`,`She invited my friend and ___ to dinner.|me`,`Leo and ___ won the game.|I`,`Come sit with Dad and ___.|me`]]];
+const VOC=[`The scientist's explanation was *lucid*, so everyone understood.|clear|confusing|lengthy|angry`,`He was *reluctant* to speak in front of the crowd.|unwilling|eager|able|forced`,`The *meager* meal barely fed the family.|small|huge|tasty|costly`,`Her *candid* answer surprised the panel.|honest|rude|careful|short`,`The storm was *imminent*, so we hurried inside.|about to happen|over|unlikely|distant`,`The judge was *impartial* and heard both sides.|fair|strict|bored|angry`,`The old bridge was *sturdy* despite its age.|strong|ugly|narrow|famous`,`They *abandoned* the project after the funding ended.|gave up|finished|began|praised`,`His *frugal* habits let him save money.|thrifty|wasteful|generous|careless`,`The *tranquil* lake was perfect for reading.|peaceful|crowded|cold|deep`,`The *vivid* painting caught everyone's eye.|bright|dull|small|old`,`The evidence was *conclusive*, ending the debate.|decisive|weak|missing|doubtful`,`She was *meticulous* about checking every detail.|careful|careless|slow|rude`,`The new rule seemed *arbitrary* to the students.|random|fair|clear|strict`,`He *hesitated* before opening the door.|paused|rushed|laughed|knocked`,`The speaker's *eloquent* words moved the audience.|expressive|angry|quiet|boring`,`The cave was *vast*, stretching for miles.|huge|dark|cold|narrow`,`Water was *scarce* in the desert.|rare|plentiful|clean|cold`,`The mayor made a *vague* promise.|unclear|firm|loud|long`,`The kitten was *wary* of the stranger.|cautious|fond|angry|sleepy`,`They *collaborated* on the science project.|worked together|argued|competed|quit`,`The *obsolete* phone no longer worked with new apps.|outdated|expensive|tiny|popular`,`The path was *treacherous* after the ice storm.|dangerous|pleasant|short|familiar`,`The *novice* climber stayed on the easy trail.|beginner|expert|guide|rival`];
+const TONES=[`angry`,`joyful`,`nervous`,`bored`,`proud`,`grateful`,`lonely`,`curious`,`embarrassed`,`relieved`,`jealous`,`determined`];
+const TONE=[`She slammed the door and stomped up the stairs.|angry`,`He couldn't stop smiling after hearing the news.|joyful`,`Her hands trembled as she waited for the results.|nervous`,`He stared at the clock, sighing every few minutes.|bored`,`She held up the trophy while the crowd cheered, beaming.|proud`,`He thanked the neighbors again for the meals they had brought.|grateful`,`She ate alone at the empty cafeteria table.|lonely`,`He leaned in, asking how the machine worked.|curious`,`Her face turned red when she tripped on stage.|embarrassed`,`He let out a long breath when the test was over.|relieved`,`She glared at her friend's new bike.|jealous`,`Despite the setbacks, he trained every single morning.|determined`,`She clenched her fists and shouted at the referee.|angry`,`They danced around the room, laughing.|joyful`,`He kept checking the door, biting his nails.|nervous`,`She doodled in her notebook while the lecture dragged on.|bored`,`He told everyone his daughter had made the honor roll.|proud`,`She wrote thank-you notes to every volunteer.|grateful`,`She read three books about volcanoes in one week.|curious`,`He hid behind his book when his name was called.|embarrassed`,`She finally smiled as the plane touched down.|relieved`,`He frowned at his friend's higher test score.|jealous`];
+const GIST=[`Bees visit flowers to collect nectar, and they carry pollen that helps plants make seeds.|Bees help plants reproduce.`,`Many cities plant trees along streets, which cools and cleans the air.|Street trees improve city life.`,`Ten minutes of daily practice builds skill faster than one long session a month.|Frequent practice beats rare practice.`,`Libraries have added video games and 3D printers to attract younger visitors.|Libraries are adapting to new users.`,`The Nile flooded each year, leaving rich soil that let ancient Egyptians grow crops.|The Nile's floods supported farming.`,`Sleep helps the brain store memories, so students who rest remember more.|Sleep supports memory.`,`Recycling aluminum uses far less energy than making new cans.|Recycling aluminum saves energy.`,`Volunteers repaired the trail, and hikers soon returned in large numbers.|Volunteer work revived the trail.`,`Coral reefs shelter fish, protect coasts, and support millions of jobs.|Coral reefs are valuable.`,`Though the team lost, the coach praised their effort and teamwork.|The coach valued effort over the score.`,`Honeybees communicate the location of food by dancing.|Bees share information through dance.`,`Electric cars produce no tailpipe exhaust, which can lower city pollution.|Electric cars may reduce pollution.`,`Wolves returning to the park changed where elk grazed, letting young trees regrow.|Wolves reshaped the park's ecosystem.`,`Many birds migrate south in winter to find food and warmer weather.|Birds migrate to survive winter.`,`Solar panels turn sunlight into electricity without burning fuel.|Solar panels make clean power.`,`Keeping a budget helps people see where their money actually goes.|Budgets show spending clearly.`];
+const EXP=[`Plants get different amounts of water|amount of water|plant height`,`Paper airplanes are made with different wing sizes|wing size|flight distance`,`Ice cubes melt at different room temperatures|room temperature|melting time`,`Seeds are planted at different depths|planting depth|number that sprout`,`Magnets of different strength pick up paper clips|magnet strength|clips lifted`,`Balls are dropped from different heights|drop height|bounce height`,`Sugar is dissolved in water at different temperatures|water temperature|dissolving time`,`Bean plants get different hours of light|hours of light|bean growth`,`Cars roll down ramps of different steepness|ramp angle|car speed`,`Yeast is mixed with different amounts of sugar|amount of sugar|gas produced`,`Batteries of different voltage power a bulb|battery voltage|bulb brightness`,`Fish are kept in tanks at different temperatures|tank temperature|fish activity`,`Soil is mixed with different fertilizers|fertilizer type|crop yield`,`Pendulums of different lengths are swung|string length|swing time`,`Different amounts of salt are added to water|amount of salt|freezing point`,`Runners drink different amounts of water before a race|water intake|race time`,`Different colors of cloth sit in the sun|cloth color|cloth temperature`,`Students hear music at different volumes while studying|music volume|quiz score`,`Rubber bands are stretched different distances|stretch distance|launch distance`,`Bread is kept at different humidity levels|humidity level|mold area`,`Springs are loaded with different masses|mass added|spring stretch`,`Different detergents clean the same stain|detergent type|stain removed`,`Different amounts of baking soda are added to vinegar|amount of baking soda|gas volume`,`Plants are grown under different colors of light|light color|plant growth`];
+const FACTS=[`What gas do plants take in for photosynthesis?|carbon dioxide|oxygen|nitrogen|hydrogen`,`What is the center of an atom called?|nucleus|electron|orbit|shell`,`Which organ pumps blood through the body?|heart|lung|liver|kidney`,`What force pulls objects toward Earth?|gravity|friction|magnetism|inertia`,`The unit used to measure force is the...|newton|joule|watt|volt`,`Which is a renewable energy source?|wind|coal|oil|natural gas`,`What is the boiling point of water at sea level?|100°C|50°C|0°C|212°C`,`Which particles have a negative charge?|electrons|protons|neutrons|nuclei`,`What do we call an animal that eats only plants?|herbivore|carnivore|omnivore|predator`,`Which layer of Earth do we live on?|crust|mantle|outer core|inner core`,`What is the main gas in Earth's atmosphere?|nitrogen|oxygen|carbon dioxide|argon`,`A substance with a pH of 7 is...|neutral|acidic|basic|salty`,`What carries genetic information in cells?|DNA|ATP|starch|fat`,`Which process do plants use to make food?|photosynthesis|respiration|digestion|evaporation`,`Which formula gives speed?|distance ÷ time|time ÷ distance|mass × time|force ÷ mass`,`Which is a mixture?|salt water|pure gold|oxygen|distilled water`,`What type of energy does a moving object have?|kinetic|potential|chemical|nuclear`,`Which is a chemical change?|burning wood|melting ice|cutting paper|boiling water`,`In a food chain, producers are usually...|plants|herbivores|decomposers|carnivores`,`What is the study of weather called?|meteorology|geology|astronomy|ecology`,`The smallest unit of life is the...|cell|organ|tissue|atom`,`Sound travels fastest through a...|solid|liquid|gas|vacuum`];
+function bank(s){
+ const sp=t=>t.split('|'),pick=(r,n,from)=>shuf(from.filter(x=>x!==r)).slice(0,n);
+ if(s==='Math')return DATA.Math.concat(genMath().map((q,i)=>({...q,t:['ACT math solving linear equations','ACT math percents','ACT math Pythagorean theorem','ACT math slope of a line','ACT math mean average','ACT math area of a circle','ACT math factoring quadratics'][i]})));
+ if(s==='English')return DATA.English.concat(CATS.flatMap(([o,rule,items])=>items.map(t=>{const[q,a]=sp(t),op=o.split(',');return{q:`Choose the word that best fills the blank:<br>${q}`,o:op,a:op.indexOf(a),w:`Answer: ${a}. ${rule}`,t:`ACT English grammar ${op[0]} vs ${op[1]}`}})));
+ if(s==='Reading'){
+  const v=VOC.map(t=>{const[q,...o]=sp(t),w=q.match(/\*(.+?)\*/)[1];return{q:`What does the word '${w}' most nearly mean here?<br>${q.replace(/\*/g,'')}`,o,a:0,w:`In context, '${w}' means ${o[0]}.`,t:'ACT reading vocabulary in context strategies'}});
+  const tn=TONE.map(t=>{const[q,a]=sp(t);return{q:`Which word best describes how the character feels?<br>${q}`,o:[a,...pick(a,3,TONES)],a:0,w:`The actions show the feeling: ${a}.`,t:'ACT reading author tone and attitude'}});
+  const gs=GIST.map(t=>{const[p,g]=sp(t);return{p,q:'Which statement best gives the main idea?',o:[g,...pick(g,3,GIST.map(x=>sp(x)[1]))],a:0,w:`The passage is mainly about this: ${g}`,t:'ACT reading main idea questions'}});
+  return DATA.Reading.concat(v,tn,gs);}
+ const pool=EXP.flatMap(x=>sp(x).slice(1));
+ const ex=EXP.flatMap(t=>{const[s2,i,d]=sp(t),mk=(r,m,k,w)=>({q:`${s2}. What is the ${k} variable?`,o:[r,...[...new Set([m,...shuf(pool)])].filter(x=>x!==r).slice(0,3)],a:0,w,t:'ACT science independent and dependent variables'});return[mk(i,d,'independent',`The independent variable is what the experimenter changes: ${i}.`),mk(d,i,'dependent',`The dependent variable is what gets measured: ${d}.`)]});
+ const fc=FACTS.map(t=>{const[q,...o]=sp(t);return{q,o,a:0,w:`Answer: ${o[0]}.`,t:'ACT science review basics'}});
+ return DATA.Science.concat(ex,fc,genSci().map((q,i)=>({...q,t:['ACT science data interpretation tables','ACT science inverse relationships Boyle law','ACT science exponential growth data','ACT science mean of trials','ACT science reading data tables'][i]})));
+}
+function genSci(){
+ const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,out=[];
+ const mk=(q,r,c,w)=>({q,o:[String(r),...[...new Set(c.map(String))].filter(x=>x!==String(r)).slice(0,3)],a:0,w});
+ const s=R(10,30),r=R(2,6);
+ out.push(mk(`A liquid is heated. At 0 min it is ${s}°C, at 2 min ${s+2*r}°C, and at 4 min ${s+4*r}°C. What is the temperature at 6 min?`,`${s+6*r}°C`,[`${s+5*r}°C`,`${s+8*r}°C`,`${s+7*r}°C`,`${s+3*r}°C`],`It rises ${r}°C each minute, so at 6 min it is ${s} + ${6*r} = ${s+6*r}°C.`));
+ const k=R(2,6)*8;
+ out.push(mk(`Gas pressure and volume: 1 atm = ${k} L, 2 atm = ${k/2} L, 4 atm = ${k/4} L. What is the volume at 8 atm?`,`${k/8} L`,[`${k/4} L`,`${k/16} L`,`${k/2} L`,`${k/8+2} L`],`Volume halves each time pressure doubles, so ${k/4} ÷ 2 = ${k/8} L.`));
+ const P=R(2,9)*10;
+ out.push(mk(`A colony has ${P} cells at hour 1 and doubles every hour. How many cells are there at hour 4?`,P*8,[P*4,P*16,P*6,P*12],`Hour 2: ${P*2}, hour 3: ${P*4}, hour 4: ${P*8}.`));
+ const m=R(10,30),d=R(1,5);
+ out.push(mk(`Three trials measured ${m-d}, ${m}, and ${m+d} cm. What is the mean?`,m,[m+d,m-d,m+1,m-1],`The sum is ${3*m}, and ${3*m} ÷ 3 = ${m}.`));
+ const v=shuf([12,18,25,31,37,44,52,60]).slice(0,4),L='ABCD',mx=v.indexOf(Math.max(...v));
+ out.push(mk(`Trial A = ${v[0]} cm, B = ${v[1]} cm, C = ${v[2]} cm, D = ${v[3]} cm. Which trial had the greatest value?`,`Trial ${L[mx]}`,[...L].filter((_,i)=>i!==mx).map(x=>`Trial ${x}`),`${v[mx]} is the largest number.`));
+ return out;
+}
+function genMath(){
+ const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,out=[];
+ const mk=(q,r,c,w)=>{const wr=[...new Set(c.map(String))].filter(x=>x!==String(r)).slice(0,3);return{q,o:[String(r),...wr],a:0,w}};
+ let x=R(2,9),a=R(2,6),b=R(1,15);
+ out.push(mk(`If ${a}x + ${b} = ${a*x+b}, what is x?`,x,[x+1,x-1,x+2,a*x],`Subtract ${b}: ${a}x = ${a*x}. Divide by ${a}: x = ${x}.`));
+ const p=[10,20,25,30,40,50][R(0,5)],n=R(2,20)*20,r=p*n/100;
+ out.push(mk(`What is ${p}% of ${n}?`,r,[r+10,r*2,r+5,r+15,p],`${p}% = ${p/100}. ${p/100} × ${n} = ${r}.`));
+ const T=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[7,24,25]][R(0,4)];
+ out.push(mk(`A right triangle has legs ${T[0]} and ${T[1]}. What is its hypotenuse?`,T[2],[T[0]+T[1],T[2]+1,T[2]-1,T[2]+2],`${T[0]}² + ${T[1]}² = ${T[0]**2+T[1]**2}, so the hypotenuse is ${T[2]}.`));
+ const x1=R(0,4),y1=R(0,6),m=R(1,5),dx=R(1,4);
+ out.push(mk(`What is the slope of the line through (${x1}, ${y1}) and (${x1+dx}, ${y1+m*dx})?`,m,[m+1,m+2,m*2,m+3,dx+m],`Slope = rise over run = ${m*dx}/${dx} = ${m}.`));
+ const mm=R(6,20),d1=R(1,4),d2=R(5,8),nums=shuf([mm-d1,mm+d1,mm-d2,mm+d2,mm]);
+ out.push(mk(`What is the mean of ${nums.join(", ")}?`,mm,[mm+1,mm-1,mm+2,mm-2],`Add them (${mm*5}) and divide by 5 to get ${mm}.`));
+ const rad=R(3,9);
+ out.push(mk(`A circle has radius ${rad}. What is its area?`,`${rad*rad}π`,[`${2*rad}π`,`${rad}π`,`${2*rad*rad}π`,`${rad*rad+rad}π`],`Area = πr² = π × ${rad}² = ${rad*rad}π.`));
+ const p2=R(1,4),q2=R(p2+1,7);
+ out.push(mk(`Solve x² − ${p2+q2}x + ${p2*q2} = 0.`,`x = ${p2} or ${q2}`,[`x = −${p2} or −${q2}`,`x = ${p2} or ${q2+1}`,`x = ${p2+1} or ${q2}`,`x = ${p2} or −${q2}`],`Factor: (x − ${p2})(x − ${q2}) = 0, so x = ${p2} or ${q2}.`));
+ return out;
+}
+function newRun(s){
+ let pool=bank(s);
+ const qs=shuf(pool).slice(0,5).map(q=>{const c=q.o[q.a],o=shuf(q.o);return{...q,o,a:o.indexOf(c)}});
+ st={s,i:0,pick:null,score:0,done:false,t0:Date.now(),qs};
+}
+function letters(i){return i%2===0?["A","B","C","D"]:["F","G","H","J"]}
+function render(){
+ if(tab==="Flashcards")return flash();
+ if(tab==="Study plan")return plan();
+ if(st.s!==tab)newRun(tab);
+ const qs=st.qs;
+ if(st.done){
+  const sec=Math.round((Date.now()-st.t0)/1000);
+  view.innerHTML=`<div class="card"><div>${tab} finished</div><div class="score">${st.score} / ${qs.length}</div><p>You took ${Math.floor(sec/60)}m ${sec%60}s. Review the explanations you missed, then try again.</p><div class="row"><button class="btn primary" id="again">New ${tab} set</button></div></div>`;
+  $("#again").onclick=()=>{newRun(tab);render()};
+  safe(()=>{const k="act_best_"+tab,b=+localStorage.getItem(k)||0;if(st.score>b)localStorage.setItem(k,st.score)});
+  return;}
+ const q=qs[st.i],L=letters(st.i);
+ const best=safe(()=>localStorage.getItem("act_best_"+tab),null);
+ view.innerHTML=`<div class="bar"><span>Question ${st.i+1} of ${qs.length}${best?` · best ${best}/${qs.length}`:""}</span><span class="timer" id="tm">0:00</span></div>
+ <div class="card">${q.p?`<p class="passage">${q.p}</p>`:""}<p class="q">${q.q.replace(/\n/g,"<br>")}</p><div id="opts"></div><div id="fb"></div></div>`;
+ const box=$("#opts");
+ q.o.forEach((t,j)=>{const b=document.createElement("button");b.className="opt";b.innerHTML=`<span class="bub">${L[j]}</span><span>${t}</span>`;b.onclick=()=>answer(j);box.appendChild(b)});
+ tick();
+}
+function tick(){clearInterval(window._t);window._t=setInterval(()=>{const e=$("#tm");if(!e){clearInterval(window._t);return}const s=Math.round((Date.now()-st.t0)/1000);e.textContent=Math.floor(s/60)+":"+String(s%60).padStart(2,"0")},500)}
+function answer(j){
+ if(st.pick!==null)return;st.pick=j;
+ const q=st.qs[st.i],opts=[...document.querySelectorAll(".opt")];
+ opts.forEach((o,k)=>{o.disabled=true;if(k===q.a)o.classList.add("right");else if(k===j)o.classList.add("wrong");if(k===j)o.classList.add("sel")});
+ if(j===q.a)st.score++;
+ const last=st.i===st.qs.length-1;
+ $("#fb").innerHTML=`<div class="why"><strong>${j===q.a?"Correct.":"Not quite."}</strong> ${q.w}</div><div class="row"><button class="btn primary" id="nx">${last?"See score":"Next question"}</button>${j===q.a?"":`<a class="btn" target="_blank" rel="noopener" href="${VID[q.t]||'https://www.youtube.com/results?search_query='+encodeURIComponent(q.t||'ACT '+tab+' tips')}">Watch a video on this</a>`}</div>`;
+ $("#nx").onclick=()=>{st.pick=null;if(last)st.done=true;else st.i++;render()};
+}
+let fi=0,flip=false;
+function flash(){
+ const c=CARDS[fi];
+ view.innerHTML=`<div class="bar"><span>Card ${fi+1} of ${CARDS.length}</span></div>
+ <div class="card flash" id="fc" role="button" tabindex="0" aria-label="Flip card"><div>${flip?c[1]:c[0]}<small>${flip?"Tap to see the topic":"Tap to see the answer"}</small></div></div>
+ <div class="row"><button class="btn" id="pv">Previous</button><button class="btn primary" id="nx">Next card</button><button class="btn" id="sh">Shuffle</button></div>`;
+ $("#fc").onclick=()=>{flip=!flip;flash()};
+ $("#fc").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip=!flip;flash()}};
+ $("#pv").onclick=()=>{fi=(fi-1+CARDS.length)%CARDS.length;flip=false;flash()};
+ $("#nx").onclick=()=>{fi=(fi+1)%CARDS.length;flip=false;flash()};
+ $("#sh").onclick=()=>{for(let i=CARDS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[CARDS[i],CARDS[j]]=[CARDS[j],CARDS[i]]}fi=0;flip=false;flash()};
+}
+function plan(){
+ view.innerHTML=`<div class="card plan"><p class="q">A simple 4-week plan</p><ol>
+ <li><strong>Week 1:</strong> Take a full practice test from act.org to find your weakest section.</li>
+ <li><strong>Week 2:</strong> Drill your weakest section for 30 minutes a day. Review every wrong answer.</li>
+ <li><strong>Week 3:</strong> Practice timed sections. English gives about 36 seconds per question, Math about 1 minute.</li>
+ <li><strong>Week 4:</strong> Take another full timed test, then review mistakes and rest the night before.</li></ol>
+ <p>Tip: keep a notebook of every question you miss and why. Patterns show up fast.</p></div>`;
+}
+drawTabs();render();
+</script>
+</body>
+</html>
